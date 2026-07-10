@@ -1,160 +1,125 @@
-<h1 align="center" style="position: relative;">
-  <br>
-    <img src="./assets/shoppy-x-ray.svg" alt="logo" width="200">
-  <br>
-  Shopify Skeleton Theme
-</h1>
+# Domaine Shopify Product Card Challenge
 
-A minimal, carefully structured Shopify theme designed to help you quickly get started. Designed with modularity, maintainability, and Shopify's best practices in mind.
+A headed Shopify theme implementation of Domaine's product card technical challenge. The product card was built from scratch with Liquid, Tailwind CSS, and vanilla JavaScript.
 
-<p align="center">
-  <a href="./LICENSE.md"><img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License"></a>
-  <a href="./actions/workflows/ci.yml"><img alt="CI" src="https://github.com/Shopify/skeleton-theme/actions/workflows/ci.yml/badge.svg"></a>
-</p>
+## Submission
 
-## Getting started
+- [Live storefront](https://domaines-challenge.myshopify.com)
+- [GitHub repository](https://github.com/odanielsantana/domaines-challenge)
 
-### Prerequisites
+## Features
 
-Before starting, ensure you have the latest Shopify CLI installed:
+- Sale badge based on variant availability and markdown pricing.
+- Current and compare-at prices synchronized with the selected variant.
+- Color variant selection through accessible swatches.
+- Primary product imagery updated when a swatch is selected.
+- Variant-specific secondary imagery displayed on hover.
+- Product title, vendor, and pricing information.
+- First available variant selected automatically when the current variant is sold out.
+- Sold-out state for unavailable variants.
+- Variant selection preserved when navigating to the product page.
+- Responsive behavior for desktop and mobile viewports.
 
-- [Shopify CLI](https://shopify.dev/docs/api/shopify-cli) – helps you download, upload, preview themes, and streamline your workflows
+## Technical approach
 
-If you use VS Code:
+The card is implemented as a reusable Liquid snippet and rendered by a configurable Shopify section:
 
-- [Shopify Liquid VS Code Extension](https://shopify.dev/docs/storefronts/themes/tools/shopify-liquid-vscode) – provides syntax highlighting, linting, inline documentation, and auto-completion specifically designed for Liquid templates
+- `snippets/product-card.liquid` contains the card markup and variant data.
+- `assets/product-card.js` synchronizes imagery, prices, badge state, links, and availability when a swatch changes.
+- `sections/product-card-showcase.liquid` lets a merchant choose the showcased product in the theme editor.
+- `src/tailwind.css` is compiled into `assets/tailwind.css`.
 
-### Clone
+The implementation uses Shopify product and variant data rather than hard-coded product content. Native radio inputs and labels are used for keyboard-accessible swatches.
 
-Clone this repository using Git or Shopify CLI:
+## Product configuration
+
+For the complete experience, the selected Shopify product should have:
+
+- At least two color variants.
+- A featured image for each variant.
+- `price` and `compare_at_price` values for variants on sale.
+- A variant metafield named `custom.secondary_image` for the hover image.
+- Inventory tracking configured to demonstrate available and sold-out states.
+
+## Tech stack
+
+- Shopify Online Store 2.0
+- Liquid
+- Tailwind CSS 4
+- Vanilla JavaScript
+- Playwright
+- Shopify CLI and Theme Check
+
+## Local development
+
+### Requirements
+
+- Node.js and npm
+- Shopify CLI
+- Access to a Shopify development store
+
+Install dependencies:
 
 ```bash
-git clone git@github.com:Shopify/skeleton-theme.git
-# or
-shopify theme init
+npm install
 ```
 
-### Preview
-
-Preview this theme using Shopify CLI:
+Start the Tailwind watcher and Shopify theme preview together:
 
 ```bash
-shopify theme dev
+npm run dev
 ```
 
-## Theme architecture
+To run them separately:
 
 ```bash
-.
-├── assets          # Stores static assets (CSS, JS, images, fonts, etc.)
-├── blocks          # Reusable, nestable, customizable UI components
-├── config          # Global theme settings and customization options
-├── layout          # Top-level wrappers for pages (layout templates)
-├── locales         # Translation files for theme internationalization
-├── sections        # Modular full-width page components
-├── snippets        # Reusable Liquid code or HTML fragments
-└── templates       # Templates combining sections to define page structures
+npm run dev:css
+npm run dev:shopify
 ```
 
-To learn more, refer to the [theme architecture documentation](https://shopify.dev/docs/storefronts/themes/architecture).
+## Validation and tests
 
-### Templates
+Build the production Tailwind stylesheet:
 
-[Templates](https://shopify.dev/docs/storefronts/themes/architecture/templates#template-types) control what's rendered on each type of page in a theme.
+```bash
+npm run build:css
+```
 
-The Skeleton Theme scaffolds [JSON templates](https://shopify.dev/docs/storefronts/themes/architecture/templates/json-templates) to make it easy for merchants to customize their store.
+Run Shopify Theme Check:
 
-None of the template types are required, and not all of them are included in the Skeleton Theme. Refer to the [template types reference](https://shopify.dev/docs/storefronts/themes/architecture/templates#template-types) for a full list.
+```bash
+shopify theme check --path .
+```
 
-### Sections
+Run the Playwright end-to-end suite against a local Shopify CLI preview:
 
-[Sections](https://shopify.dev/docs/storefronts/themes/architecture/sections) are Liquid files that allow you to create reusable modules of content that can be customized by merchants. They can also include blocks which allow merchants to add, remove, and reorder content within a section.
+```bash
+npm test
+```
 
-Sections are made customizable by including a `{% schema %}` in the body. For more information, refer to the [section schema documentation](https://shopify.dev/docs/storefronts/themes/architecture/sections/section-schema).
+Run the tests against the hosted storefront:
 
-### Blocks
+```bash
+npm run test:e2e:store
+```
 
-[Blocks](https://shopify.dev/docs/storefronts/themes/architecture/blocks) let developers create flexible layouts by breaking down sections into smaller, reusable pieces of Liquid. Each block has its own set of settings, and can be added, removed, and reordered within a section.
+If the storefront is password protected, provide its password through the environment:
 
-Blocks are made customizable by including a `{% schema %}` in the body. For more information, refer to the [block schema documentation](https://shopify.dev/docs/storefronts/themes/architecture/blocks/theme-blocks/schema).
+```bash
+SHOPIFY_STOREFRONT_PASSWORD="your-password" npm run test:e2e:store
+```
 
-## Schemas
+The end-to-end coverage verifies variant selection, image changes, hover imagery, pricing and sale states, product links, add-to-cart behavior, availability, and responsive layouts.
 
-When developing components defined by schema settings, we recommend these guidelines to simplify your code:
+## Theme structure
 
-- **Single property settings**: For settings that correspond to a single CSS property, use CSS variables:
-
-  ```liquid
-  <div class="collection" style="--gap: {{ block.settings.gap }}px">
-    ...
-  </div>
-
-  {% stylesheet %}
-    .collection {
-      gap: var(--gap);
-    }
-  {% endstylesheet %}
-
-  {% schema %}
-  {
-    "settings": [{
-      "type": "range",
-      "label": "gap",
-      "id": "gap",
-      "min": 0,
-      "max": 100,
-      "unit": "px",
-      "default": 0,
-    }]
-  }
-  {% endschema %}
-  ```
-
-- **Multiple property settings**: For settings that control multiple CSS properties, use CSS classes:
-
-  ```liquid
-  <div class="collection {{ block.settings.layout }}">
-    ...
-  </div>
-
-  {% stylesheet %}
-    .collection--full-width {
-      /* multiple styles */
-    }
-    .collection--narrow {
-      /* multiple styles */
-    }
-  {% endstylesheet %}
-
-  {% schema %}
-  {
-    "settings": [{
-      "type": "select",
-      "id": "layout",
-      "label": "layout",
-      "values": [
-        { "value": "collection--full-width", "label": "t:options.full" },
-        { "value": "collection--narrow", "label": "t:options.narrow" }
-      ]
-    }]
-  }
-  {% endschema %}
-  ```
-
-## CSS & JavaScript
-
-For CSS and JavaScript, we recommend using the [`{% stylesheet %}`](https://shopify.dev/docs/api/liquid/tags#stylesheet) and [`{% javascript %}`](https://shopify.dev/docs/api/liquid/tags/javascript) tags. They can be included multiple times, but the code will only appear once.
-
-### `critical.css`
-
-The Skeleton Theme explicitly separates essential CSS necessary for every page into a dedicated `critical.css` file.
-
-## Contributing
-
-We're excited for your contributions to the Skeleton Theme! This repository aims to remain as lean, lightweight, and fundamental as possible, and we kindly ask your contributions to align with this intention.
-
-Visit our [CONTRIBUTING.md](./CONTRIBUTING.md) for a detailed overview of our process, guidelines, and recommendations.
-
-## License
-
-Skeleton Theme is open-sourced under the [MIT](./LICENSE.md) License.
+```text
+assets/      Compiled styles, JavaScript, images, and icons
+config/      Theme settings
+layout/      Global theme layouts
+sections/    Theme editor sections
+snippets/    Reusable Liquid components
+src/         Tailwind source stylesheet
+templates/   Shopify JSON templates
+tests/e2e/   Playwright end-to-end tests
+```
