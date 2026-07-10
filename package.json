@@ -4,9 +4,15 @@
     "build:css": "npx @tailwindcss/cli -i ./src/tailwind.css -o ./assets/tailwind.css --minify",
     "build:tailwind": "npm run build:css",
     "dev:shopify": "shopify theme dev",
-    "dev": "concurrently \"npm run dev:css\" \"npm run dev:shopify\""
+    "dev": "concurrently \"npm run dev:css\" \"npm run dev:shopify\"",
+    "test": "npm run test:e2e",
+    "test:e2e": "playwright test",
+    "test:e2e:store": "PLAYWRIGHT_BASE_URL=https://domaines-challenge.myshopify.com playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:debug": "playwright test --debug"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.1",
     "@tailwindcss/cli": "^4.3.2",
     "concurrently": "^10.0.3",
     "tailwindcss": "^4.3.2"
