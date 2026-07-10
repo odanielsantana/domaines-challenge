@@ -9,7 +9,7 @@
   {% if showcase_product != blank %}
     {% render 'product-card', product: showcase_product %}
   {% else %}
-    <p>Add a product to the catalog or select one in the theme editor.</p>
+    <p>{{ 'products.product.select_product' | t }}</p>
   {% endif %}
 </section>
 

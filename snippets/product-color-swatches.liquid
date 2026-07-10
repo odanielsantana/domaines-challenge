@@ -38,7 +38,9 @@
                 data-secondary-image="{{ option_secondary_image | image_url: width: 900 }}"
               {% endif %}
               data-price="{{ option_variant.price | money | escape }}"
-              data-compare-price="{{ option_variant.compare_at_price | money | escape }}"
+              {% if option_variant.compare_at_price > option_variant.price %}
+                data-compare-price="{{ option_variant.compare_at_price | money | escape }}"
+              {% endif %}
               data-available="{{ option_variant.available }}"
               {% if option_value.selected %}checked{% endif %}
             >

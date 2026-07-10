@@ -35,7 +35,7 @@
         {% if secondary_image != blank %}
           src="{{ secondary_image | image_url: width: 900 }}"
         {% endif %}
-        alt="{{ product.title | escape }} — imagem secundária"
+        alt="{{ 'products.product.secondary_image_alt' | t: product: product.title | escape }}"
         width="{{ secondary_image.width | default: 900 }}"
         height="{{ secondary_image.height | default: 900 }}"
         loading="lazy"
@@ -52,9 +52,9 @@
       <span
         class="product-detail__compare-price"
         data-product-compare-price
-        {% if current_variant.compare_at_price == blank %}
+        {% unless current_variant.compare_at_price > current_variant.price %}
           hidden
-        {% endif %}
+        {% endunless %}
       >
         {{ current_variant.compare_at_price | money }}
       </span>
@@ -71,7 +71,7 @@
       <input type="hidden" name="id" value="{{ current_variant.id }}" data-product-variant-id>
 
       <div class="product-detail__quantity">
-        <label for="Quantity-{{ section.id }}">Quantidade</label>
+        <label for="Quantity-{{ section.id }}">{{ 'products.product.quantity' | t }}</label>
         <input id="Quantity-{{ section.id }}" type="number" name="quantity" min="1" value="1">
       </div>
 
@@ -80,11 +80,17 @@
         type="submit"
         name="add"
         data-product-add-button
+        data-add-to-cart-text="{{ 'products.product.add_to_cart' | t | escape }}"
+        data-sold-out-text="{{ 'products.product.sold_out' | t | escape }}"
         {% unless current_variant.available %}
           disabled
         {% endunless %}
       >
-        {% if current_variant.available %}Adicionar ao carrinho{% else %}Esgotado{% endif %}
+        {% if current_variant.available %}
+          {{ 'products.product.add_to_cart' | t }}
+        {% else %}
+          {{ 'products.product.sold_out' | t }}
+        {% endif %}
       </button>
 
       <div
@@ -107,7 +113,7 @@
     align-items: flex-start;
     gap: clamp(3rem, 8vw, 8rem);
     padding-block: 3rem 5rem;
-    font-family: 'Roboto', sans-serif;
+    font-family: var(--font-primary--family);
   }
 
   .product-detail__images {

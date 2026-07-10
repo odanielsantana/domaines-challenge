@@ -1,3 +1,15 @@
+{% doc %}
+  Renders an interactive product card with color swatches and variant pricing.
+
+  This component supports products whose only variant option is Color. Products
+  with additional options, such as Size, require a multi-option variant picker.
+
+  @param {product} product - Product displayed by the card
+
+  @example
+  {% render 'product-card', product: product %}
+{% enddoc %}
+
 {% liquid
   assign selected_variant = product.selected_or_first_available_variant
 
@@ -11,13 +23,13 @@
   endunless
 
   assign primary_image = selected_variant.featured_image | default: product.featured_image
-  assign secondary_image = selected_variant.metafields.custom.secondary_image.value
 %}
 
 <article
   class="flex flex-col gap-3.75 w-fit max-w-92.25"
   data-product-card
   data-product-handle="{{ product.handle }}"
+  data-sold-out-text="{{ 'products.product.sold_out' | t | escape }}"
 >
   <a
     href="{{ product.url }}?variant={{ selected_variant.id }}"
@@ -26,20 +38,21 @@
   >
     <figure class="relative inline-block overflow-hidden rounded-2xl border border-[#e8e8e8] p-5">
       <span
-        class="absolute z-[1] top-[20px] left-[20px] py-[6.5px] px-[12.5px] border border-[#ff0000] rounded-[25.61px] bg-transparent text-[#ff0000] text-[15.37px] leading-[17.93px] [font-family:'Libre_Franklin',Arial,sans-serif] block"
+        class="absolute z-[1] top-[20px] left-[20px] py-[6.5px] px-[12.5px] border border-[#ff0000] rounded-[25.61px] bg-transparent text-[#ff0000] text-[15.37px] leading-[17.93px] block"
         data-product-card-sale-badge
         {% unless selected_variant.available and selected_variant.compare_at_price > selected_variant.price %}
           hidden
         {% endunless %}
       >
-        On sale!
+        {{ 'products.product.on_sale' | t }}
       </span>
 
       {% if primary_image != blank %}
         <div class="relative h-[301px] w-[275px] shrink-0 overflow-hidden">
           <img
-            src="{{ primary_image | image_url: width: 275 }}"
-            data-secondary-image="{{ secondary_image | image_url: width: 275 }}"
+            src="{{ primary_image | image_url: width: 550 }}"
+            srcset="{{ primary_image | image_url: width: 275 }} 275w, {{ primary_image | image_url: width: 550 }} 550w"
+            sizes="275px"
             alt="{{ primary_image.alt | default: product.title | escape }}"
             class="product-card-image block h-full w-full object-contain transition-opacity duration-300 ease-in-out"
             style="width: 275px; height: 301px; object-fit: contain;"
@@ -92,8 +105,14 @@
                   data-option-position="{{ option.position }}"
                   data-option-value="{{ option_value.name | escape }}"
                   data-variant-id="{{ option_value.variant.id }}"
-                  data-image-url="{{ option_value.variant.image | image_url: width: 275 }}"
-                  data-secondary-image-url="{{ option_value.variant.metafields.custom.secondary_image.value | image_url: width: 275 }}"
+                  {% if option_value.variant.image != blank %}
+                    data-image-url="{{ option_value.variant.image | image_url: width: 550 }}"
+                    data-image-srcset="{{ option_value.variant.image | image_url: width: 275 }} 275w, {{ option_value.variant.image | image_url: width: 550 }} 550w"
+                  {% endif %}
+                  {% if option_value.variant.metafields.custom.secondary_image.value != blank %}
+                    data-secondary-image-url="{{ option_value.variant.metafields.custom.secondary_image.value | image_url: width: 550 }}"
+                    data-secondary-image-srcset="{{ option_value.variant.metafields.custom.secondary_image.value | image_url: width: 275 }} 275w, {{ option_value.variant.metafields.custom.secondary_image.value | image_url: width: 550 }} 550w"
+                  {% endif %}
                   data-price="{{ option_value.variant.price | money | escape }}"
                   data-price-raw="{{ option_value.variant.price }}"
                   data-compare-at-price="{{ option_value.variant.compare_at_price | money | escape }}"
@@ -148,7 +167,7 @@
           </a>
         </h2>
 
-        <div class="flex gap-2">
+        <div class="flex gap-2" aria-live="polite" aria-atomic="true">
           <p
             class="line-through weight-regular"
             data-product-card-compare-price
@@ -166,7 +185,7 @@
             {% if selected_variant.available %}
               {{ selected_variant.price | money }}
             {% else %}
-              Sold out
+              {{ 'products.product.sold_out' | t }}
             {% endif %}
           </p>
         </div>

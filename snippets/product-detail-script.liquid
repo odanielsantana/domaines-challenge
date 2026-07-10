@@ -20,11 +20,13 @@
       const variantIdInput = productDetail.querySelector('[data-product-variant-id]');
       const addButton = productDetail.querySelector('[data-product-add-button]');
       const paymentButton = productDetail.querySelector('[data-product-payment-button]');
+      const addToCartText = addButton?.dataset.addToCartText || 'Add to cart';
+      const soldOutText = addButton?.dataset.soldOutText || 'Sold out';
 
       const updatePurchaseAvailability = (isAvailable) => {
         if (addButton) {
           addButton.disabled = !isAvailable;
-          addButton.textContent = isAvailable ? 'Adicionar ao carrinho' : 'Esgotado';
+          addButton.textContent = isAvailable ? addToCartText : soldOutText;
         }
 
         if (paymentButton) {

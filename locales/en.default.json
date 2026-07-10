@@ -42,6 +42,16 @@
     "password": "Password",
     "enter": "Enter"
   },
+  "products": {
+    "product": {
+      "add_to_cart": "Add to cart",
+      "on_sale": "On sale!",
+      "quantity": "Quantity",
+      "secondary_image_alt": "{{ product }} — secondary image",
+      "select_product": "Add a product to the catalog or select one in the theme editor.",
+      "sold_out": "Sold out"
+    }
+  },
   "search": {
     "title": "Search",
     "placeholder": "Search articles, pages, or products",
