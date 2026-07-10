@@ -1,8 +1,23 @@
 <!doctype html>
 <html lang="{{ request.locale.iso_code }}">
   <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
     {% # Inlined CSS Variables %}
     {% render 'css-variables' %}
+    {{ 'tailwind.css' | asset_url | stylesheet_tag }}
+
+    <style>
+      body {
+        font-family: 'Roboto', sans-serif;
+      }
+
+      .site-footer-wrapper {
+        margin-top: auto;
+      }
+    </style>
 
     {% comment %}
       Font preloading:
@@ -31,6 +46,8 @@
 
     {{ content_for_layout }}
 
-    {% sections 'footer-group' %}
+    <div class="site-footer-wrapper">
+      {% sections 'footer-group' %}
+    </div>
   </body>
 </html>

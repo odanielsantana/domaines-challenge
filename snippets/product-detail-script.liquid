@@ -1,0 +1,113 @@
+{% doc %}
+  Keeps product images, prices, availability, form variant and URL synchronized.
+{% enddoc %}
+
+{% javascript %}
+  const initializeProductDetails = (root = document) => {
+    root.querySelectorAll('[data-product-detail]').forEach((productDetail) => {
+      if (productDetail.dataset.initialized === 'true') return;
+      productDetail.dataset.initialized = 'true';
+
+      const colorInputs = productDetail.querySelectorAll('[data-product-color]');
+      const swatches = productDetail.querySelectorAll('[data-swatch-color]');
+      const primaryImage = productDetail.querySelector('[data-product-primary-image]');
+      const primaryFrame = productDetail.querySelector('[data-product-primary-frame]');
+      const secondaryImage = productDetail.querySelector('[data-product-secondary-image]');
+      const secondaryFrame = productDetail.querySelector('[data-product-secondary-frame]');
+      const price = productDetail.querySelector('[data-product-price]');
+      const comparePrice = productDetail.querySelector('[data-product-compare-price]');
+      const selectedColor = productDetail.querySelector('[data-selected-color]');
+      const variantIdInput = productDetail.querySelector('[data-product-variant-id]');
+      const addButton = productDetail.querySelector('[data-product-add-button]');
+      const paymentButton = productDetail.querySelector('[data-product-payment-button]');
+
+      const updatePurchaseAvailability = (isAvailable) => {
+        if (addButton) {
+          addButton.disabled = !isAvailable;
+          addButton.textContent = isAvailable ? 'Adicionar ao carrinho' : 'Esgotado';
+        }
+
+        if (paymentButton) {
+          paymentButton.inert = !isAvailable;
+          paymentButton.setAttribute('aria-disabled', String(!isAvailable));
+          paymentButton.querySelectorAll('button').forEach((button) => {
+            button.disabled = !isAvailable;
+          });
+        }
+      };
+
+      if (paymentButton) {
+        const paymentButtonObserver = new MutationObserver(() => {
+          const isAvailable = paymentButton.getAttribute('aria-disabled') !== 'true';
+          paymentButton.querySelectorAll('button').forEach((button) => {
+            button.disabled = !isAvailable;
+          });
+        });
+        paymentButtonObserver.observe(paymentButton, { childList: true, subtree: true });
+      }
+
+      swatches.forEach((swatch) => {
+        swatch.style.backgroundColor = swatch.dataset.swatchColor;
+        if (swatch.dataset.swatchImage) {
+          swatch.style.backgroundImage = `url("${swatch.dataset.swatchImage}")`;
+        }
+      });
+
+      const selectVariant = (input, updateUrl = true) => {
+        const variantId = input.dataset.variantId;
+        const nextPrimaryImage = input.dataset.primaryImage;
+        const nextSecondaryImage = input.dataset.secondaryImage;
+        const isAvailable = input.dataset.available === 'true';
+
+        if (primaryImage && primaryFrame) {
+          if (nextPrimaryImage) {
+            primaryImage.src = nextPrimaryImage;
+            primaryImage.alt = input.dataset.primaryAlt || '';
+            primaryFrame.hidden = false;
+          } else {
+            primaryImage.removeAttribute('src');
+            primaryFrame.hidden = true;
+          }
+        }
+
+        if (secondaryImage && secondaryFrame) {
+          if (nextSecondaryImage) {
+            secondaryImage.src = nextSecondaryImage;
+            secondaryFrame.hidden = false;
+          } else {
+            secondaryImage.removeAttribute('src');
+            secondaryFrame.hidden = true;
+          }
+        }
+
+        if (price) price.textContent = input.dataset.price;
+        if (comparePrice) {
+          comparePrice.textContent = input.dataset.comparePrice || '';
+          comparePrice.hidden = !input.dataset.comparePrice;
+        }
+
+        if (selectedColor) selectedColor.textContent = input.value;
+        if (variantIdInput) {
+          variantIdInput.value = variantId;
+          variantIdInput.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+
+        updatePurchaseAvailability(isAvailable);
+
+        if (updateUrl && variantId) {
+          const url = new URL(window.location.href);
+          url.searchParams.set('variant', variantId);
+          window.history.replaceState({}, '', url);
+        }
+      };
+
+      colorInputs.forEach((input) => input.addEventListener('change', () => selectVariant(input)));
+
+      const checkedInput = productDetail.querySelector('[data-product-color]:checked');
+      if (checkedInput) selectVariant(checkedInput, false);
+    });
+  };
+
+  initializeProductDetails();
+  document.addEventListener('shopify:section:load', (event) => initializeProductDetails(event.target));
+{% endjavascript %}

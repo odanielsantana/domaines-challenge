@@ -1,0 +1,63 @@
+<section class="meet-domaine-banner full-width" aria-label="{{ section.settings.alt_text | escape }}">
+  {% if section.settings.image != blank %}
+    {{
+      section.settings.image
+      | image_url: width: 2400
+      | image_tag:
+        class: 'meet-domaine-banner__image',
+        widths: '750, 1128, 1500, 2000, 2400',
+        sizes: '100vw',
+        loading: 'eager',
+        fetchpriority: 'high',
+        alt: section.settings.alt_text
+    }}
+  {% else %}
+    <img
+      class="meet-domaine-banner__image"
+      src="{{ 'meet-domaine-cover.jpeg' | asset_url }}"
+      alt="{{ section.settings.alt_text | escape }}"
+      width="1128"
+      height="191"
+      loading="eager"
+      fetchpriority="high"
+    >
+  {% endif %}
+</section>
+
+{% stylesheet %}
+  .meet-domaine-banner {
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .meet-domaine-banner__image {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Meet Domaine banner",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Banner image"
+    },
+    {
+      "type": "text",
+      "id": "alt_text",
+      "label": "Alternative text",
+      "default": "Meet Domaine"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Meet Domaine banner"
+    }
+  ]
+}
+{% endschema %}

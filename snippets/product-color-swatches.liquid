@@ -1,0 +1,60 @@
+{% doc %}
+  Renders color swatches with the variant data used by the product detail script.
+
+  @param {product} product - Product whose color options are rendered
+  @param {variant} current_variant - Currently selected product variant
+{% enddoc %}
+
+{% for option in product.options_with_values %}
+  {% assign normalized_option_name = option.name | downcase %}
+  {% if normalized_option_name == 'color' or normalized_option_name == 'colour' or normalized_option_name == 'cor' %}
+    <fieldset class="product-detail__colors">
+      <legend>{{ option.name }}: <span data-selected-color>{{ option.selected_value }}</span></legend>
+
+      <div class="product-detail__swatches">
+        {% for option_value in option.values %}
+          {% liquid
+            assign option_variant = option_value.variant | default: current_variant
+            assign option_primary_image = option_variant.featured_image | default: product.featured_image
+            assign option_secondary_image = option_variant.metafields.custom.secondary_image.value
+            assign option_handle = option_value.name | handleize
+            assign input_id = 'product-color-' | append: product.id | append: '-' | append: forloop.index
+            assign swatch_background_color = option_value.swatch.color | default: option_handle
+          %}
+
+          <div class="product-detail__swatch">
+            <input
+              id="{{ input_id }}"
+              type="radio"
+              name="product-color-{{ product.id }}"
+              value="{{ option_value.name | escape }}"
+              data-product-color
+              data-variant-id="{{ option_variant.id }}"
+              {% if option_primary_image != blank %}
+                data-primary-image="{{ option_primary_image | image_url: width: 900 }}"
+              {% endif %}
+              data-primary-alt="{{ option_primary_image.alt | default: product.title | escape }}"
+              {% if option_secondary_image != blank %}
+                data-secondary-image="{{ option_secondary_image | image_url: width: 900 }}"
+              {% endif %}
+              data-price="{{ option_variant.price | money | escape }}"
+              data-compare-price="{{ option_variant.compare_at_price | money | escape }}"
+              data-available="{{ option_variant.available }}"
+              {% if option_value.selected %}checked{% endif %}
+            >
+            <label for="{{ input_id }}" title="{{ option_value.name | escape }}">
+              <span
+                class="product-detail__swatch-color"
+                data-swatch-color="{{ swatch_background_color | escape }}"
+                {% if option_value.swatch.image %}
+                  data-swatch-image="{{ option_value.swatch.image | image_url: width: 80 }}"
+                {% endif %}
+              ></span>
+              <span class="visually-hidden">{{ option_value.name }}</span>
+            </label>
+          </div>
+        {% endfor %}
+      </div>
+    </fieldset>
+  {% endif %}
+{% endfor %}

@@ -1,0 +1,34 @@
+{% liquid
+  assign showcase_product = section.settings.product
+  if showcase_product == blank
+    assign showcase_product = collections.all.products.first
+  endif
+%}
+
+<section class="mx-auto px-4 py-12 flex justify-start gap-5">
+  {% if showcase_product != blank %}
+    {% render 'product-card', product: showcase_product %}
+  {% else %}
+    <p>Add a product to the catalog or select one in the theme editor.</p>
+  {% endif %}
+</section>
+
+<script src="{{ 'product-card.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Product card showcase",
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Product"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product card showcase"
+    }
+  ]
+}
+{% endschema %}
