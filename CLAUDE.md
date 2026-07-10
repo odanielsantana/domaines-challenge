@@ -1,1 +1,0 @@
-/home/daniel/domaine-product-card/AGENTS.md
