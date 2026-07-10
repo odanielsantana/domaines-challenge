@@ -9,12 +9,19 @@
  */
 {
   "sections": {
-    "main": {
-      "type": "hello-world",
+    "meet_domaine_banner": {
+      "type": "meet-domaine-banner",
+      "settings": {
+        "alt_text": "Meet Domaine"
+      }
+    },
+    "product_card_showcase": {
+      "type": "product-card-showcase",
       "settings": {}
     }
   },
   "order": [
-    "main"
+    "meet_domaine_banner",
+    "product_card_showcase"
   ]
 }
