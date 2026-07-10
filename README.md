@@ -36,6 +36,8 @@ The implementation uses Shopify product and variant data rather than hard-coded 
 For the complete experience, the selected Shopify product should have:
 
 - At least two color variants.
+- Color as its only variant option. Multi-option products, such as Color + Size,
+  require a multi-option picker and are outside this component's scope.
 - A featured image for each variant.
 - `price` and `compare_at_price` values for variants on sale.
 - A variant metafield named `custom.secondary_image` for the hover image.
@@ -109,7 +111,7 @@ If the storefront is password protected, provide its password through the enviro
 SHOPIFY_STOREFRONT_PASSWORD="your-password" npm run test:e2e:store
 ```
 
-The end-to-end coverage verifies variant selection, image changes, hover imagery, pricing and sale states, product links, add-to-cart behavior, availability, and responsive layouts.
+The end-to-end coverage verifies variant selection, image changes, hover imagery, pricing and sale states, product links, add-to-cart behavior, availability, and responsive layouts. Sale and secondary-image scenarios are required test fixtures: the suite fails with a configuration message when either is missing.
 
 ## Theme structure
 

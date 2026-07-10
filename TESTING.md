@@ -1,42 +1,42 @@
-# Testes
+# Testing
 
-## Validação estática
+## Static validation
 
 ```bash
 npm run build:css
 shopify theme check --path .
 ```
 
-## Testes end-to-end
+## End-to-end tests
 
-O Playwright inicia e encerra o preview Shopify automaticamente. Execute:
+Playwright starts and stops the Shopify preview automatically. Run:
 
 ```bash
 npm test
 ```
 
-Por padrão, o Playwright acessa `http://127.0.0.1:9292`. Para testar outra URL:
+By default, Playwright uses `http://127.0.0.1:9292`. To test another URL:
 
 ```bash
 PLAYWRIGHT_BASE_URL="https://sua-loja.myshopify.com" npm test
 ```
 
-Para testar diretamente a loja deste projeto:
+To test this project's hosted store directly:
 
 ```bash
 SHOPIFY_STOREFRONT_PASSWORD="sua-senha" npm run test:e2e:store
 ```
 
-Se a loja estiver protegida por senha:
+If the store is password protected:
 
 ```bash
 SHOPIFY_STOREFRONT_PASSWORD="sua-senha" npm test
 ```
 
-Para acompanhar os testes visualmente:
+To run the tests interactively:
 
 ```bash
 npm run test:e2e:ui
 ```
 
-O bloco **Product card showcase** deve ter um produto com pelo menos duas cores configurado. Para cobrir todos os cenários, configure também `compare_at_price` e o metafield `custom.secondary_image` nas variantes.
+The **Product card showcase** section must use a product whose only variant option is Color and which has at least two colors. The fixture must also include an available variant with `compare_at_price` greater than `price` and a variant with the `custom.secondary_image` metafield. The suite intentionally fails when these required scenarios are missing.
