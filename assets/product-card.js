@@ -14,6 +14,8 @@ const initializeProductCards = (root = document) => {
     if (!image || inputs.length === 0) return;
 
     const defaultImage = image.getAttribute('src');
+    const defaultImageSrcset = image.getAttribute('srcset');
+    const soldOutText = card.dataset.soldOutText || 'Sold out';
 
     swatches.forEach((swatch) => {
       swatch.style.backgroundColor = swatch.dataset.swatchColor;
@@ -27,12 +29,20 @@ const initializeProductCards = (root = document) => {
 
       const variantImage = input.getAttribute('data-image-url');
       const secondaryImage = input.getAttribute('data-secondary-image-url');
+      const variantImageSrcset = input.getAttribute('data-image-srcset');
+      const secondaryImageSrcset = input.getAttribute('data-secondary-image-srcset');
       const nextImage = state === 'hover'
         ? (secondaryImage || variantImage || defaultImage)
         : (variantImage || defaultImage);
+      const nextImageSrcset = state === 'hover'
+        ? (secondaryImageSrcset || variantImageSrcset || defaultImageSrcset)
+        : (variantImageSrcset || defaultImageSrcset);
 
       if (nextImage) {
         image.setAttribute('src', nextImage);
+      }
+      if (nextImageSrcset) {
+        image.setAttribute('srcset', nextImageSrcset);
       }
     };
 
@@ -56,7 +66,7 @@ const initializeProductCards = (root = document) => {
       }
 
       if (price) {
-        price.textContent = isAvailable ? variantPrice : 'Sold out';
+        price.textContent = isAvailable ? variantPrice : soldOutText;
       }
 
       if (comparePrice) {
