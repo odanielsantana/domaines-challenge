@@ -1,7 +1,7 @@
 const { test, expect } = require('@playwright/test');
 const { openStorefront, getProductCard } = require('./helpers/storefront');
 
-test('o product card permanece dentro da viewport', async ({ page }) => {
+test('the product card remains inside the viewport', async ({ page }) => {
   await openStorefront(page);
   const card = await getProductCard(page);
   const box = await card.boundingBox();
@@ -11,7 +11,7 @@ test('o product card permanece dentro da viewport', async ({ page }) => {
   expect(box.x + box.width).toBeLessThanOrEqual(await page.evaluate(() => window.innerWidth));
 });
 
-test('a página de produto responde ao tamanho da viewport', async ({ page }) => {
+test('the product page responds to the viewport size', async ({ page }) => {
   await openStorefront(page);
   const card = await getProductCard(page);
   await card.locator('[data-product-card-link]').first().click();

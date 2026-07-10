@@ -10,7 +10,7 @@ async function openStorefront(page, path = '/') {
       await page.goto(path);
     } catch (error) {
       if (attempt === 3) {
-        unavailable(`A storefront não está acessível: ${error.message}`);
+        unavailable(`The storefront is not accessible: ${error.message}`);
         return;
       }
       await page.waitForTimeout(500 * attempt);
@@ -19,7 +19,7 @@ async function openStorefront(page, path = '/') {
     const proxyError = page.getByRole('heading', { name: /Failed to render storefront/i });
     if (!(await proxyError.isVisible().catch(() => false))) break;
     if (attempt === 3) {
-      unavailable('O preview do Shopify CLI retornou 502 após três tentativas.');
+      unavailable('The Shopify CLI preview returned 502 after three attempts.');
       return;
     }
     await page.waitForTimeout(500 * attempt);
@@ -28,7 +28,7 @@ async function openStorefront(page, path = '/') {
   const invalidAccessToken = page.getByText(/access token provided is expired|access token.*invalid/i);
   if (await invalidAccessToken.isVisible().catch(() => false)) {
     unavailable(
-      'A sessão do Shopify CLI expirou. Autentique novamente e reinicie `npm run dev` antes dos testes.',
+      'The Shopify CLI session has expired. Authenticate again and restart `npm run dev` before running the tests.',
     );
     return;
   }
@@ -38,7 +38,7 @@ async function openStorefront(page, path = '/') {
     const password = process.env.SHOPIFY_STOREFRONT_PASSWORD;
     if (!password) {
       unavailable(
-        'A loja está protegida. Defina SHOPIFY_STOREFRONT_PASSWORD antes de executar os testes.',
+        'The store is password protected. Set SHOPIFY_STOREFRONT_PASSWORD before running the tests.',
       );
       return;
     }
@@ -60,13 +60,13 @@ async function getProductCard(page) {
     }
   }
 
-  await expect(card, 'Selecione um produto no bloco Product card showcase.').toBeVisible();
+  await expect(card, 'Select a product in the Product card showcase section.').toBeVisible();
   return card;
 }
 
 async function getAlternativeSwatch(container, { availableOnly = false } = {}) {
   const allSwatches = container.locator('[data-option-value], [data-product-color]');
-  expect(await allSwatches.count(), 'O produto de teste precisa ter pelo menos duas cores.').toBeGreaterThan(1);
+  expect(await allSwatches.count(), 'The test product must have at least two colors.').toBeGreaterThan(1);
 
   for (let index = 0; index < await allSwatches.count(); index += 1) {
     const candidate = allSwatches.nth(index);
@@ -77,13 +77,13 @@ async function getAlternativeSwatch(container, { availableOnly = false } = {}) {
     }
   }
 
-  throw new Error('Não foi encontrada uma cor alternativa para o teste.');
+  throw new Error('No alternative color was found for the test.');
 }
 
 async function selectSwatch(swatch) {
   if (await swatch.isChecked()) return;
   const id = await swatch.getAttribute('id');
-  expect(id, 'O input de cor precisa ter um id associado ao label.').toBeTruthy();
+  expect(id, 'The color input must have an id associated with its label.').toBeTruthy();
   await swatch.locator(`xpath=following-sibling::label[@for="${id}"]`).click();
   await expect(swatch).toBeChecked();
 }

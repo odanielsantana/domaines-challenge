@@ -11,11 +11,14 @@ test.describe('Product card', () => {
     await openStorefront(page);
   });
 
-  test('seleciona inicialmente a primeira variante disponível', async ({ page }) => {
+  test('initially selects the first available variant', async ({ page }) => {
     const card = await getProductCard(page);
     const availableSwatches = card.locator('[data-option-value][data-available="true"]');
 
-    test.skip(await availableSwatches.count() === 0, 'O produto não possui variantes disponíveis.');
+    expect(
+      await availableSwatches.count(),
+      'The test product must have at least one available variant.',
+    ).toBeGreaterThan(0);
 
     const checkedSwatch = card.locator('[data-option-value]:checked');
     await expect(checkedSwatch).toHaveCount(1);
@@ -26,7 +29,7 @@ test.describe('Product card', () => {
     );
   });
 
-  test('troca imagem, preço, badge e links ao selecionar uma cor', async ({ page }) => {
+  test('updates image, price, badge, and links when selecting a color', async ({ page }) => {
     const card = await getProductCard(page);
     const swatch = await getAlternativeSwatch(card);
     const variantId = await swatch.getAttribute('data-variant-id');
@@ -64,7 +67,7 @@ test.describe('Product card', () => {
       .toHaveJSProperty('hidden', !isOnSale);
   });
 
-  test('mostra badge e preço riscado para uma variante em promoção', async ({ page }) => {
+  test('shows the badge and compare-at price for a variant on sale', async ({ page }) => {
     const card = await getProductCard(page);
     const swatches = card.locator('[data-option-value][data-available="true"]');
     let saleSwatch;
@@ -80,7 +83,7 @@ test.describe('Product card', () => {
       }
     }
 
-    test.skip(!saleSwatch, 'O produto não possui uma variante disponível em promoção.');
+    expect(saleSwatch, 'The test product must have an available variant on sale.').toBeTruthy();
     await selectSwatch(saleSwatch);
 
     await expect(card.locator('[data-product-card-sale-badge]')).toBeVisible();
@@ -89,7 +92,7 @@ test.describe('Product card', () => {
       .toHaveText(await saleSwatch.getAttribute('data-compare-at-price'));
   });
 
-  test('usa a imagem secundária no hover quando ela existe', async ({ page }) => {
+  test('uses the secondary image on hover', async ({ page }) => {
     const card = await getProductCard(page);
     const swatches = card.locator('[data-option-value]');
     let swatchWithSecondaryImage;
@@ -102,7 +105,10 @@ test.describe('Product card', () => {
       }
     }
 
-    test.skip(!swatchWithSecondaryImage, 'O produto não possui imagem secundária configurada.');
+    expect(
+      swatchWithSecondaryImage,
+      'The test product must have a variant with a secondary image.',
+    ).toBeTruthy();
     await selectSwatch(swatchWithSecondaryImage);
     const expectedSecondaryImage = await swatchWithSecondaryImage.getAttribute('data-secondary-image-url');
     const image = card.locator('.product-card-image');
@@ -115,7 +121,7 @@ test.describe('Product card', () => {
 test.describe('Product card rendered by Liquid', () => {
   test.use({ javaScriptEnabled: false });
 
-  test('tem estado inicial correto antes da inicialização do JavaScript', async ({ page }) => {
+  test('has the correct initial state before JavaScript initialization', async ({ page }) => {
     await openStorefront(page);
     const card = await getProductCard(page);
     const checkedSwatch = card.locator('[data-option-value]:checked');

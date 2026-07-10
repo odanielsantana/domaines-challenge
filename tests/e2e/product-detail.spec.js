@@ -18,7 +18,7 @@ async function openAlternativeVariant(page, { availableOnly = false } = {}) {
 }
 
 test.describe('Product detail', () => {
-  test('abre e mantém a variante selecionada no card', async ({ page }) => {
+  test('opens and preserves the variant selected on the card', async ({ page }) => {
     const variantId = await openAlternativeVariant(page);
     const detail = page.locator('[data-product-detail]');
 
@@ -29,7 +29,7 @@ test.describe('Product detail', () => {
     expect(await detail.locator('[data-product-secondary-frame]:visible').count()).toBeLessThanOrEqual(1);
   });
 
-  test('sincroniza mídia, preço, disponibilidade, formulário e URL', async ({ page }) => {
+  test('synchronizes media, price, availability, form, and URL', async ({ page }) => {
     await openAlternativeVariant(page);
     const detail = page.locator('[data-product-detail]');
     const swatch = await getAlternativeSwatch(detail);
@@ -55,7 +55,7 @@ test.describe('Product detail', () => {
     }
   });
 
-  test('adiciona a variante selecionada ao carrinho', async ({ page }) => {
+  test('adds the selected variant to the cart', async ({ page }) => {
     const variantId = await openAlternativeVariant(page, { availableOnly: true });
     const detail = page.locator('[data-product-detail]');
     const title = await detail.locator('h1').innerText();
