@@ -8,10 +8,10 @@
 {% for option in product.options_with_values %}
   {% assign normalized_option_name = option.name | downcase %}
   {% if normalized_option_name == 'color' or normalized_option_name == 'colour' or normalized_option_name == 'cor' %}
-    <fieldset class="product-detail__colors">
-      <legend>{{ option.name }}: <span data-selected-color>{{ option.selected_value }}</span></legend>
+    <fieldset class="mt-2 border-0 p-0">
+      <legend class="mb-3 font-medium">{{ option.name }}: <span data-selected-color>{{ option.selected_value }}</span></legend>
 
-      <div class="product-detail__swatches">
+      <div class="flex flex-wrap gap-2">
         {% for option_value in option.values %}
           {% liquid
             assign option_variant = option_value.variant | default: current_variant
@@ -22,9 +22,10 @@
             assign swatch_background_color = option_value.swatch.color | default: option_handle
           %}
 
-          <div class="product-detail__swatch">
+          <div>
             <input
               id="{{ input_id }}"
+              class="peer sr-only"
               type="radio"
               name="product-color-{{ product.id }}"
               value="{{ option_value.name | escape }}"
@@ -44,15 +45,19 @@
               data-available="{{ option_variant.available }}"
               {% if option_value.selected %}checked{% endif %}
             >
-            <label for="{{ input_id }}" title="{{ option_value.name | escape }}">
+            <label
+              class="flex h-7 w-7 cursor-pointer rounded-full border border-transparent p-[3px] transition-colors hover:border-neutral-400 peer-checked:border-neutral-900 peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-neutral-900"
+              for="{{ input_id }}"
+              title="{{ option_value.name | escape }}"
+            >
               <span
-                class="product-detail__swatch-color"
+                class="h-full w-full rounded-full border border-black/10 bg-cover bg-center"
                 data-swatch-color="{{ swatch_background_color | escape }}"
                 {% if option_value.swatch.image %}
                   data-swatch-image="{{ option_value.swatch.image | image_url: width: 80 }}"
                 {% endif %}
               ></span>
-              <span class="visually-hidden">{{ option_value.name }}</span>
+              <span class="sr-only">{{ option_value.name }}</span>
             </label>
           </div>
         {% endfor %}
