@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build CSS
+        run: npm run build:css
+
+      - name: Verify generated CSS is committed
+        run: git diff --exit-code -- assets/tailwind.css
+
+      - name: Run Shopify Theme Check
+        run: npx --yes @shopify/cli@4.4.0 theme check --path .
